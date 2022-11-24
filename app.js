@@ -1,4 +1,4 @@
-// require('crypto').randomBytes(64).toString('hex')
+const jwt = require('jsonwebtoken')
 const express = require('express')
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
@@ -30,7 +30,16 @@ async function run(){
             res.send(users);
         });
 
-        
+        app.get('/jwt', async(req,res) => {
+            const userMail = req.query.email
+            const query = {email : userMail}
+            const result = await usersCollection.findOne(query)
+            if(result){
+                const token = jwt.sign({email: userMail}, process.env.TOKEN, {expiresIn : '23h'})
+                return res.send({accessToken : token})
+            }
+            res.status(403).send({assesToken: ''})
+        })
         
     } catch (error) {
         console.log(error)
