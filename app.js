@@ -24,11 +24,18 @@ async function run(){
             res.send(result);
         });
 
+        app.post('/add-product', async (req, res) => {
+            const product = req.body;
+            const result = await usersCollection.insertOne(product);
+            res.send(result);
+        });
+
         app.get('/users', async (req, res) => {
             const query = {};
             const users = await usersCollection.find(query).toArray();
             res.send(users);
         });
+
 
         app.get('/jwt', async(req,res) => {
             const userMail = req.query.email
