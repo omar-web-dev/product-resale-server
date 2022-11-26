@@ -11,8 +11,9 @@ app.use(cors())
 app.use(express.json())
 
 
+const  uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASSWORD}@ac-s4fqikr-shard-00-00.uadalh8.mongodb.net:27017,ac-s4fqikr-shard-00-01.uadalh8.mongodb.net:27017,ac-s4fqikr-shard-00-02.uadalh8.mongodb.net:27017/?ssl=true&replicaSet=atlas-6gg0lv-shard-0&authSource=admin&retryWrites=true&w=majority`;
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.uadalh8.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.uadalh8.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run(){
@@ -61,6 +62,19 @@ async function run(){
             res.send(users);
         });
 
+        app.get('/users-email', async (req, res) => {
+            let query = {}
+            console.log(req.query.email)
+            if (req.query.email) {
+              query = {
+                email : req.query.email
+              }
+            }
+            const cursor = usersCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+          })
+
 
         app.get('/jwt', async(req,res) => {
             const userMail = req.query.email
@@ -83,6 +97,7 @@ async function run(){
             console.log(req.query.userStatus)
             const cursor = usersCollection.find(query)
             const result = await cursor.toArray()
+            console.log(result)
             res.send(result)
           })
         
