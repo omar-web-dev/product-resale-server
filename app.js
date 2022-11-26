@@ -45,6 +45,16 @@ async function run(){
             res.send(result);
         })
 
+        app.patch('/add-product/:id', async (req, res) => {
+            const id = req.params.id
+            const massage = req.body.massage
+            const review = req.body.review
+            const query = {_id : ObjectId(id)} 
+            const updated = {$set : {massage, review }}
+            const result = await productCollection.updateMany(query, updated)
+            res.send(result) 
+        })
+
         app.get('/users', async (req, res) => {
             const query = {};
             const users = await usersCollection.find(query).toArray();
@@ -62,6 +72,19 @@ async function run(){
             }
             res.status(403).send({assesToken: ''})
         })
+
+        app.get('/users-role', async (req, res) => {
+            let query = {}
+            if (req.query.userStatus) {
+              query = {
+                userStatus: req.query.userStatus
+              }
+            }
+            console.log(req.query.userStatus)
+            const cursor = usersCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+          })
         
     } catch (error) {
         console.log(error)
