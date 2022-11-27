@@ -20,6 +20,7 @@ async function run() {
     try {
         const usersCollection = client.db('aspen-home').collection('users')
         const productCollection = client.db('aspen-home').collection('product')
+        const categoryCollection = client.db('aspen-home').collection('categorize')
 
         app.post('/users', async (req, res) => {
             const user = req.body;
@@ -85,14 +86,65 @@ async function run() {
                 }
             }
             const cursor = usersCollection.find(query)
-            const user = await cursor.toArray()
-            console.log(user[0]?.userStatus)
-            res.send({ isAdmin: user[0]?.userStatus === 'admin' });
+            const admin = await cursor.toArray()
+            res.send({ isAdmin: admin[0]?.userStatus === 'admin' });
+        })
+
+        app.get('/users/seller/:email', async (req, res) => {
+            let query = {}
+            console.log(req.query.email)
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = usersCollection.find(query)
+            const admin = await cursor.toArray()
+            res.send({ isSeller: admin[0]?.userStatus === 'seller' });
+        })
+    
+        
+        app.get('/buyer', async (req, res) => {
+            let query = {}
+            console.log(req.query.email)
+            if (req.query.email) {
+                query = {
+                    userStatus : req.query.email
+                }
+            }
+            const cursor = usersCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
+        app.get('/rule', async (req, res) => {
+            let query = {}
+            console.log(req.query , 'user')
+            if (req.query.userStatus) {
+                query = {
+                    userStatus: req.query.userStatus
+                }
+            }
+            const cursor = usersCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
         })
 
         app.get('/users-email', async (req, res) => {
             let query = {}
-            // console.log(req.query.email)
+            console.log(req.query)
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = usersCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+        app.get('/buyer-email', async (req, res) => {
+            let query = {}
+            console.log(req.query)
             if (req.query.email) {
                 query = {
                     email: req.query.email
@@ -127,6 +179,12 @@ async function run() {
             const result = await cursor.toArray()
             // console.log(result)
             res.send(result)
+        })
+
+        app.get('/categorize', async (req, res) => {
+            const query = {};
+            const category = await categoryCollection.find(query).toArray();
+            res.send(category);
         })
 
     } catch (error) {
