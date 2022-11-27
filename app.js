@@ -21,6 +21,7 @@ async function run() {
         const usersCollection = client.db('aspen-home').collection('users')
         const productCollection = client.db('aspen-home').collection('product')
         const categoryCollection = client.db('aspen-home').collection('categorize')
+        const bookingCollection = client.db('aspen-home').collection('booking')
 
         app.post('/users', async (req, res) => {
             const user = req.body;
@@ -90,7 +91,6 @@ async function run() {
 
         app.get('/users/admin/:email', async (req, res) => {
             let query = {}
-            console.log(req.query.email)
             if (req.query.email) {
                 query = {
                     email: req.query.email
@@ -103,7 +103,6 @@ async function run() {
 
         app.get('/users/seller/:email', async (req, res) => {
             let query = {}
-            console.log(req.query.email)
             if (req.query.email) {
                 query = {
                     email: req.query.email
@@ -117,7 +116,6 @@ async function run() {
         
         app.get('/buyer', async (req, res) => {
             let query = {}
-            console.log(req.query.email)
             if (req.query.email) {
                 query = {
                     userStatus : req.query.email
@@ -128,9 +126,20 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/booking', async (req, res) => {
+            let query = {}
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = bookingCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
         app.get('/rule', async (req, res) => {
             let query = {}
-            console.log(req.query , 'user')
             if (req.query.userStatus) {
                 query = {
                     userStatus: req.query.userStatus
@@ -143,7 +152,6 @@ async function run() {
 
         app.get('/users-email', async (req, res) => {
             let query = {}
-            console.log(req.query)
             if (req.query.email) {
                 query = {
                     email: req.query.email
@@ -155,7 +163,6 @@ async function run() {
         })
         app.get('/buyer-email', async (req, res) => {
             let query = {}
-            console.log(req.query)
             if (req.query.email) {
                 query = {
                     email: req.query.email
@@ -185,10 +192,8 @@ async function run() {
                     userStatus: req.query.userStatus,
                 }
             }
-            // console.log(req.query.userStatus)
             const cursor = usersCollection.find(query)
             const result = await cursor.toArray()
-            // console.log(result)
             res.send(result)
         })
         
