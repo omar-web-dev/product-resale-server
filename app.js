@@ -35,15 +35,26 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/all-product', async (req, res) => {
+        app.get('/product', async (req, res) => {
             const query = {};
             const products = await productCollection.find(query).toArray();
             res.send(products);
         });
 
+        app.get('/product/category', async (req, res) => {
+            let query = {}
+            if (req.query.category) {
+                query = {
+                    category : req.query.category
+                }
+            }
+            const cursor = productCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
         app.get('/my-product', async (req, res) => {
             let query = {}
-            // console.log(req.query.email)
             if (req.query.email) {
                 query = {
                     email: req.query.email
@@ -180,12 +191,14 @@ async function run() {
             // console.log(result)
             res.send(result)
         })
-
+        
         app.get('/categorize', async (req, res) => {
             const query = {};
             const category = await categoryCollection.find(query).toArray();
             res.send(category);
         })
+
+
 
     } catch (error) {
         console.log(error)
