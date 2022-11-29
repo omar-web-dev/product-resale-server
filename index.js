@@ -30,6 +30,13 @@ async function run() {
         });
 
 
+        app.post('/booking', async (req, res) => {
+            const booking = req.body;
+            const result = await bookingCollection.insertOne(booking);
+            res.send(result);
+        });
+
+
         app.post('/add-product', async (req, res) => {
             const product = req.body;
             const result = await productCollection.insertOne(product);
@@ -73,6 +80,30 @@ async function run() {
             res.send(result);
         })
 
+        app.delete('/delete-user/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(query);
+            res.send(result);
+        })
+       
+        // app.get('/services', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id) };
+        //     const service = await productCollection.find(query);
+        //     res.send(service);
+        // });
+
+        // http://localhost:5000/product/:id?id=638313bad66fd19d66bcce7f
+        app.get('/product/:id', async (req, res) => {
+            let query = {}
+            const id = req.query.id;
+            query = { _id: ObjectId(id) };
+            const cursor = await productCollection.find(query)
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
         app.patch('/add-product/:id', async (req, res) => {
             const id = req.params.id
             const massage = req.body.massage
@@ -101,16 +132,43 @@ async function run() {
             res.send({ isAdmin: admin[0]?.userStatus === 'admin' });
         })
 
-        app.get('/users/seller/:email', async (req, res) => {
+        // app.get('/users/buyer', async (req, res) => {
+        //     let query = {}
+        //     if (req.query.email) {
+        //         query = {
+        //             email: req.query.email
+        //         }
+        //     }
+        //     const buyer = await usersCollection.find(query)
+            
+        //     res.send({ isBuyer : buyer.userStatus === 'buyer' });
+        // })
+
+
+        app.get('/users/buyer', async (req, res) => {
             let query = {}
             if (req.query.email) {
                 query = {
                     email: req.query.email
                 }
             }
-            const cursor = usersCollection.find(query)
-            const admin = await cursor.toArray()
-            res.send({ isSeller: admin[0]?.userStatus === 'seller' });
+            const cursor = await usersCollection.findOne(query)
+            
+            // const seller = await cursor.toArray()
+            res.send({ isBuyer : cursor.userStatus === 'buyer' });
+        })
+
+        app.get('/users/seller', async (req, res) => {
+            let query = {}
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = await usersCollection.findOne(query)
+            
+            // const seller = await cursor.toArray()
+            res.send({ isSeller : cursor.userStatus === 'seller' });
         })
     
         
@@ -128,15 +186,18 @@ async function run() {
 
         app.get('/booking', async (req, res) => {
             let query = {}
-            if (req.query.email) {
+            console.log(req.query.userEmail)
+            if (req.query.userEmail) {
                 query = {
-                    email: req.query.email
+                    userEmail : req.query.userEmail
                 }
             }
             const cursor = bookingCollection.find(query)
             const result = await cursor.toArray()
             res.send(result)
         })
+
+        
 
         app.get('/rule', async (req, res) => {
             let query = {}
@@ -161,6 +222,7 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
+
         app.get('/buyer-email', async (req, res) => {
             let query = {}
             if (req.query.email) {
