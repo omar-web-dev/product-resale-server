@@ -43,6 +43,12 @@ async function run() {
             res.send(result);
         });
 
+        app.post('/git', async (req, res) => {
+            const productStatus = req.body;
+            const result = await productCollection.insertOne(productStatus);
+            res.send(result);
+        });
+
         app.get('/product', async (req, res) => {
             const query = {};
             const products = await productCollection.find(query).toArray();
@@ -87,13 +93,6 @@ async function run() {
             res.send(result);
         })
        
-        // app.get('/services', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id) };
-        //     const service = await productCollection.find(query);
-        //     res.send(service);
-        // });
-
         // http://localhost:5000/product/:id?id=638313bad66fd19d66bcce7f
         app.get('/product/:id', async (req, res) => {
             let query = {}
@@ -153,8 +152,6 @@ async function run() {
                 }
             }
             const cursor = await usersCollection.findOne(query)
-            
-            // const seller = await cursor.toArray()
             res.send({ isBuyer : cursor.userStatus === 'buyer' });
         })
 
